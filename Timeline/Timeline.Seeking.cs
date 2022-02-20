@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PeriStuff {
+﻿namespace PeriStuff {
 	public partial class Timeline<T> {
 		Node? nextStart => currentStartNode is null ? firstStartNode : currentStartNode.Next;
 		Node? nextEnd => currentEndNode is null ? firstEndNode : currentEndNode.Next;
@@ -22,15 +16,16 @@ namespace PeriStuff {
 		/// </returns>
 		public int SeekToAfter ( double time ) {
 			int count = 0;
-			while ( previousStart?.Time < time || previousEnd?.Time < time ) {
+			while ( time < currentTime && (previousStart?.Time > time || previousEnd?.Time > time) ) {
 				SeekOneEntryBack();
 				count--;
 			}
-			while ( nextStart?.Time >= time || nextEnd?.Time >= time ) {
+			while ( time >= currentTime && (nextStart?.Time <= time || nextEnd?.Time <= time) ) {
 				SeekOneEntryForward();
 				count++;
 			}
 
+			currentTime = time;
 			return count;
 		}
 
@@ -45,15 +40,16 @@ namespace PeriStuff {
 		/// </returns>
 		public int SeekToBefore ( double time ) {
 			int count = 0;
-			while ( previousStart?.Time <= time || previousEnd?.Time <= time ) {
+			while ( time <= currentTime && (previousStart?.Time >= time || previousEnd?.Time >= time) ) {
 				SeekOneEntryBack();
 				count--;
 			}
-			while ( nextStart?.Time > time || nextEnd?.Time > time ) {
+			while ( time > currentTime && (nextStart?.Time < time || nextEnd?.Time < time) ) {
 				SeekOneEntryForward();
 				count++;
 			}
 
+			currentTime = time;
 			return count;
 		}
 
@@ -71,11 +67,11 @@ namespace PeriStuff {
 				var node = nodes.start;
 				var time = node.Time;
 				int count = 0;
-				while ( previousStart != node && (previousStart?.Time < time || previousEnd?.Time < time) ) {
+				while ( previousStart != node && currentTime > time ) {
 					SeekOneEntryBack();
 					count--;
 				}
-				while ( previousStart != node && (nextStart?.Time >= time || nextEnd?.Time >= time) ) {
+				while ( previousStart != node && currentTime <= time ) {
 					SeekOneEntryForward();
 					count++;
 				}
@@ -101,11 +97,11 @@ namespace PeriStuff {
 				var node = nodes.start;
 				var time = node.Time;
 				int count = 0;
-				while ( nextStart != node && ( previousStart?.Time <= time || previousEnd?.Time <= time ) ) {
+				while ( nextStart != node && currentTime >= time ) {
 					SeekOneEntryBack();
 					count--;
 				}
-				while ( nextStart != node && ( nextStart?.Time > time || nextEnd?.Time > time ) ) {
+				while ( nextStart != node && currentTime < time ) {
 					SeekOneEntryForward();
 					count++;
 				}
@@ -113,7 +109,7 @@ namespace PeriStuff {
 				return count;
 			}
 			else {
-				return SeekToAfter( entry.StartTime );
+				return SeekToBefore( entry.StartTime );
 			}
 		}
 
@@ -131,11 +127,11 @@ namespace PeriStuff {
 				var node = nodes.end;
 				var time = node.Time;
 				int count = 0;
-				while ( previousEnd != node && ( previousStart?.Time < time || previousEnd?.Time < time ) ) {
+				while ( previousEnd != node && currentTime > time ) {
 					SeekOneEntryBack();
 					count--;
 				}
-				while ( previousEnd != node && ( nextStart?.Time >= time || nextEnd?.Time >= time ) ) {
+				while ( previousEnd != node && currentTime <= time ) {
 					SeekOneEntryForward();
 					count++;
 				}
@@ -143,7 +139,7 @@ namespace PeriStuff {
 				return count;
 			}
 			else {
-				return SeekToAfter( entry.StartTime );
+				return SeekToAfter( entry.EndTime );
 			}
 		}
 
@@ -161,11 +157,11 @@ namespace PeriStuff {
 				var node = nodes.end;
 				var time = node.Time;
 				int count = 0;
-				while ( nextEnd != node && ( previousStart?.Time <= time || previousEnd?.Time <= time ) ) {
+				while ( nextEnd != node && currentTime >= time ) {
 					SeekOneEntryBack();
 					count--;
 				}
-				while ( nextEnd != node && ( nextStart?.Time > time || nextEnd?.Time > time ) ) {
+				while ( nextEnd != node && currentTime < time ) {
 					SeekOneEntryForward();
 					count++;
 				}
@@ -173,7 +169,7 @@ namespace PeriStuff {
 				return count;
 			}
 			else {
-				return SeekToAfter( entry.StartTime );
+				return SeekToBefore( entry.EndTime );
 			}
 		}
 

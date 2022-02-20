@@ -36,6 +36,9 @@
 					Next.Previous = Previous;
 				}
 			}
+
+			public override string ToString ()
+				=> $"(at {Time}) {{{Value}}}";
 		}
 	}
 }

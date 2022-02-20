@@ -169,18 +169,18 @@ namespace PeriStuff {
 		/// <summary>
 		/// Triggered when the start of an entry is reached while seeking forwards in time
 		/// </summary>
-		public Action<Entry>? EventStarted;
+		public event Action<Entry>? EventStarted;
 		/// <summary>
 		/// Triggered when the end of an entry is reached while seeking forwards in time
 		/// </summary>
-		public Action<Entry>? EventEnded;
+		public event Action<Entry>? EventEnded;
 		/// <summary>
 		/// Triggered when the end of an entry is reached while seeking backwards in time
 		/// </summary>
-		public Action<Entry>? EventReverted;
+		public event Action<Entry>? EventReverted;
 		/// <summary>
 		/// Triggered when the start of an entry is reached while seeking backwards in time
 		/// </summary>
-		public Action<Entry>? EventRewound;
+		public event Action <Entry>? EventRewound;
 	}
 }
